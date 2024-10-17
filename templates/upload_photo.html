@@ -1,0 +1,28 @@
+<!-- upload_photo.html -->
+{% extends "base.html" %}
+
+{% block title %}画像アップロード{% endblock title %}
+{% block h1 %}画像アップロード{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" action="{% url 'photo' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">写真をアップロードする</button>
+</form>
+
+<!-- フォームのエラーを表示 -->
+{% if form.errors %}
+  <ul>
+    {% for field in form %}
+      {% for error in field.errors %}
+        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+      {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+      <li><strong>Non-field error:</strong> {{ error }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% endblock %}

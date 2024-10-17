@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>ファイルアップロード</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div id="dropArea" style="border: 2px dashed gray; padding: 100px;">
+      ファイルをドラッグ＆ドロップまたはクリックしてアップロードしてください。
+    </div>
+    {# TODO: リクエストで送信をするのは、dxfだけ、 Infraのidはサーバー側でセットする。 #}
+    {{ form.dxf }}
+    <button type="submit">アップロード</button>
+  </form>
+
+  <!-- アップロード中に表示するメッセージ要素 -->
+  <div id="loadingMessage" style="display: none; font-size: 24px; color: orange; font-weight: bold;">
+    ｢アップロード」ボタンを押すと、損傷写真帳の作成を開始します...
+  </div>
+
+  <script>
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.querySelector("#id_dxf");
+    const form = document.getElementById('uploadForm');
+
+    dropArea.addEventListener('dragover', (event) => { //ドロップボックスと重なったとき
+      event.preventDefault();
+      dropArea.style.border = '2px dashed blue'; // 枠線のスタイルを設定
+      dropArea.style.backgroundColor = 'rgba(0, 0, 255, 0.2)';  // ここで背景色を青く設定(rgb:色の三原色 + a:透明度)
+    });
+
+    dropArea.addEventListener('dragleave', (event) => { //ドロップボックスから離れた時
+      dropArea.style.border = '2px dashed blue';  // 枠スタイルを元に戻す
+      dropArea.style.backgroundColor = '';  // 背景色を元に戻す
+    });
+  
+    dropArea.addEventListener('drop', (event) => { //ドロップした後
+      event.preventDefault();
+      dropArea.style.border = '2px dashed blue';  // 枠スタイルを元に戻す
+      dropArea.style.backgroundColor = '';  // 背景色を元に戻す
+      
+      // event.dataTransferからファイルを取得
+      const files = event.dataTransfer.files;
+      
+      if (files.length > 0) {
+        fileInput.files = files;
+
+        // 「作成中...」のメッセージを表示
+        loadingMessage.style.display = 'block';
+        
+        // 自動的にフォームを送信
+        form.submit();
+      }
+    });
+
+    dropArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    form.addEventListener('submit', () => {
+      // 「作成中...」のメッセージを表示
+      loadingMessage.style.display = 'block';
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        // 「作成中...」のメッセージを表示
+        loadingMessage.style.display = 'block';
+
+        // ファイルを選択したら自動的にフォームを送信
+        form.submit();
+      }
+
+      // ファイルを格納する処理
+      //const formData = new FormData(); // フォームデータを作成
+      //formData.append('file', files[0]); // ファイルを追加
+
+      // id_fileに対してドラッグアンドドロップをセットする
+      //const fileInput = document.querySelector("#id_file");
+      //fileInput.files = files;
+    });      
+
+    </script>
+  
+{% endblock %}

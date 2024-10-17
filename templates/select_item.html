@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}番号登録{% endblock title %}
+{% block h1 %}番号登録{% endblock %}
+
+{% block content %}
+<style>
+  .right{
+    padding-left: 137px;
+  }
+</style>
+<form action="/number/number_list" method='POST'>
+  {% csrf_token %}
+
+    {{ form.non_field_errors }}
+        <div class="side">
+            名前：{{ form.name }}
+          <div class="side">
+              連続する場合：{{ form.top_number }} 〜 {{ form.bottom_number }}
+              <button name="btn_add" type="submit">
+                追加する
+              </button>
+          </div>
+        </div>
+        <div class="side right">
+            単独する場合：{{ form.single_number }}<!--入力欄-->
+            <button name="btn_add" type="submit">
+              追加する
+            </button>
+        </div>
+            {% if field.help_text %}
+                <span class="helptext">{{ field.help_text }}</span><!--ヘルプテキスト-->
+            {% endif %}
+            {{ field.errors }}<!--エラーメッセージ-->
+  {{ form.management_form }}
+  <!--type="submit":フォーム送信ボタンを表す-->
+  <button name="btn_submit" type="submit">送信する</button>
+</form>
+<h3>{{ message }}</h3>
+
+{% endblock %}

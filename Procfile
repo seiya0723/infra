@@ -1,0 +1,1 @@
+web: gunicorn infraprotect.wsgi:application --log-file -

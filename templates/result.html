@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}番号一覧{% endblock title %}
+{% block h1 %}番号一覧{% endblock %}
+
+{% block content %}
+
+<ul>
+{% for member in object_list %}
+    <li>
+        {{ member.name }}({{ member.age }})
+    </li>
+{% empty %}
+    <li>データがありません</li>
+{% endfor %}
+<a href="{% url 'index' %}">登録ページ</a>
+
+{% endblock %}

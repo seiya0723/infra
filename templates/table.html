@@ -1,0 +1,108 @@
+<!-- table.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}損傷一覧{% endblock title %}
+{% block h1 %}損傷一覧{% endblock %}
+
+{% block content %}
+    <table class="my-table" border="1">
+        <thead>
+            <tr>
+                <th>損傷状況</th>
+                <th>損傷写真</th>
+            </tr>
+        </thead>
+        {# ここで動的にボタンを生成 #}
+        {% for i in keikan_range %}<button class="keikan-button-style">径間</button>{% endfor %}
+        <tbody id="sortable">
+            {% for bridge in damage_table %}
+            <form id="ajax-file-send" action="#" method="post" enctype="multipart/form-data">
+                <!--ajaxの設定：methodはpostにする、mulitpart/form-dataとする、CSRF対策を行う-->
+                {% csrf_token %}
+                <tr>
+                    <td>
+                        {% for item in bridge.join %}
+                            <div style="border: 1px solid black; padding: 5px; margin-bottom: 10px; width: 410px;">
+                                {% for first_item in item.first %}
+                                    <span style="background-color: Pink;">{{ first_item }}</span> <!-- first項目に色付け -->
+                                    <br>
+                                {% endfor %}
+                                {% for second_item in item.second %}
+                                    {{ second_item }}
+                                    {% if "NON-a" not in second_item %} <!-- NON-aを含まない場合 -->
+                                        <br>
+                                        <select name="input1_{{ forloop.counter }}" onChange="updatePlaceholder(this)" style="width: 100px;">
+                                            <option value=""></option>
+                                            <option value="width">幅</option>
+                                            <option value="area">面積</option>
+                                            <option value="bolt">本数</option>
+                                            <option value="level">段差量</option>
+                                            <!-- 必要に応じて他のオプションを追加 -->
+                                        </select>
+                                        <input type="text" name="input3_{{ forloop.counter }}" placeholder="数量" style="width: 100px;" />
+                                        <input type="text" name="input2_{{ forloop.counter }}" placeholder="単位" style="width: 60px;" id="input_{{ forloop.counter }}" />
+                                        <input type="text" name="input4_{{ forloop.counter }}" placeholder="分類" style="width: 60px;" />
+                                        <input type="text" name="input5_{{ forloop.counter }}" placeholder="パターン" style="width: 60px;" />
+                                        <br>
+                                    {% else %}
+                                        
+                                    {% endif %}
+                                {% endfor %}
+                                <br>
+                                <button>変更</button>
+                                <button>削除</button>
+                            </div>
+
+                        {% endfor %}
+                    </td>
+                    <td class="center-align">
+                        <ul class="vert"> 
+                            {% if bridge.last is not None %}
+                                <ul class="side">
+                                    <li style="top-bottom: 5px; margin-bottom: 5px;"> <!-- ここで下部の空間を指定 -->
+                                        <div style="display: flex; align-items: center;"> <!--align-items: center; 縦の中央に配置-->
+                                            <div>
+                                                <img id="uploaded-image-{{ forloop.parentloop.counter }}" src="{% static item %}" width="200" height="150" style="margin:0 10px;">
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; justify-content: center;"> <!--justify-content: center; ボタンを縦の中央に配置-->
+                                                <input id="upload-file-{{ forloop.parentloop.counter }}" name="upload-file" type="file" style="display: none">
+                                                <button id="fileSelect-{{ forloop.parentloop.counter }}" type="button" style="margin-bottom: 10px;" value="{% static item %}">変更</button><!--bottom(下方向)に10pxの間隔を空ける-->
+                                                <button style="margin-bottom: 10px;">追加</button>
+                                                <button>削除</button> <!--縦文字に変更-->
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li style="top-bottom: 5px; margin-bottom: 5px;"> <!-- ここで下部の空間を指定 -->
+                                        <div style="display: flex; align-items: center;"> <!--align-items: center; 縦の中央に配置-->
+                                            <div>
+                                                <img id="before-image" src="{% static bridge.picture %}" width="200" height="150" style="margin:0 10px; border: 1px solid grey;">
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; justify-content: center;"> <!--justify-content: center; ボタンを縦の中央に配置-->
+                                                <input id="upload-file" name="upload-file" type="file" style="display: none">
+                                                <button id="fileSelect" type="button" style="margin-bottom: 10px;" value="{% static item %}">変更</button>
+                                                <!--<button id="fileSelect" type="button" style="margin-bottom: 10px;" value="{% static item %}">変更</button>-->
+                                                <!--<button style="margin-bottom: 10px;">変更</button> bottom(下方向)に10pxの間隔を空ける-->
+                                                <button>削除</button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li style="top-bottom: 5px; margin-bottom: 5px;"> <!-- ここで下部の空間を指定 -->
+                                        {% spaceless %}
+                                            {% if bridge.textarea_content %} <!-- damage_tableのforループ(bridge)とviews.pyのtextarea_content-->
+                                                <textarea name="notes" rows="6" style="margin:0 10px;">{{ bridge.textarea_content|safe }}</textarea>
+                                            {% else %}
+                                                <textarea name="notes" rows="6" style="margin:0 10px;" placeholder="写真メモを入力してください。"></textarea>
+                                            {% endif %}
+                                        {% endspaceless %}
+                                    </li>
+                                </ul>                                 
+                            {% endif %}
+                        </ul>
+                    </td>
+                </tr>
+            </form>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

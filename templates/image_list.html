@@ -1,0 +1,210 @@
+<!-- image_list.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block h1 %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>画像一覧</h1>
+    <a href="{% url 'photo' %}" class="btn btn-primary">写真選択</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- <form action="{% url 'photo' %}" method="get"> -->
+    {% csrf_token %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script><!--jQueryを読み込み-->
+    
+    <div class="row"> <!-- mt-2:上に2つ間隔を空ける、mb:下、ml:左、mr:右 -->
+        {% for img in image_files %}
+        <div class="col-md-2 d-flex">
+        <!--12で割った数字が列数となる(例：col-md-2 は 12÷2 ＝ 6枚表示 )-->
+        <!-- d-flex：全体をFlexbox(配置や間隔を容易に決められる)として扱う -->
+            <div class="d-flex flex-column"> <!-- flex-column:縦並び -->
+                <div class="picture img"> <!-- 写真用のdivクラス -->
+                    <img src="{% static img %}" style="height: 150px; width: 200px;" ><!--写真サイズを3：4に矯正-->
+                </div>
+                <div class="comment-area mb-2"> <!-- プルダウンおよびボタン用のdivクラス -->
+                    <!-- コメント入力の直前にプルダウンメニューを追加 -->
+                    <select id="select-comment-{{ forloop.counter0 }}" class="form-control" style="height: 50px; width: 200px; font-size: 14px;" onchange="toggleCustomInput(this)">
+                        <option value="">---選択してください---</option>
+                        <option value="選択肢1">正面（起点より）</option>
+                        <option value="選択肢2">正面（終点より）</option>
+                        <option value="選択肢3">全体側面（左が起点）</option>
+                        <option value="選択肢4">全体側面（右が起点）</option>
+                        <option value="選択肢5">側面（左が起点）</option>
+                        <option value="選択肢6">側面（右が起点）</option>
+                        <option value="選択肢7">橋面（起点より）</option>
+                        <option value="選択肢8">橋面（終点より）</option>
+                        <option value="選択肢9">桁下面（起点より）</option>
+                        <option value="選択肢10">桁下面（終点より）</option>
+                        <option value="選択肢11">桁下面（左が起点）</option>
+                        <option value="選択肢12">桁下面（右が起点）</option>
+                        <option value="選択肢13">底版（左が起点）</option>
+                        <option value="選択肢14">底版（右が起点）</option>
+                        <option value="選択肢15">A1橋台</option>
+                        <option value="選択肢16">A2橋台</option>
+                        <option value="選択肢17">P1橋脚</option>
+                        <option value="選択肢18">P2橋脚</option>
+                        <option value="選択肢19">P3橋脚</option>
+                        <option value="選択肢20">P4橋脚</option>
+                        <option value="選択肢21">P5橋脚</option>
+                        <option value="選択肢22">P6橋脚</option>
+                        <option value="選択肢23">P7橋脚</option>
+                        <option value="選択肢24">P8橋脚</option>
+                        <option value="選択肢25">P9橋脚</option>
+                        <option value="選択肢26">支承部（起点側）</option>
+                        <option value="選択肢27">支承部（終点側）</option>
+                        <option value="選択肢28">落橋防止システム（起点側）</option>
+                        <option value="選択肢29">落橋防止システム（終点側）</option>
+                        <option value="選択肢30">高欄・防護柵・地覆・縁石（起点から見て左側）</option>
+                        <option value="選択肢31">高欄・防護柵・地覆・縁石（起点から見て右側）</option>
+                        <option value="選択肢32">防護柵・地覆（起点から見て左側）</option>
+                        <option value="選択肢33">防護柵・地覆（起点から見て右側）</option>
+                        <option value="選択肢34">高欄・地覆（起点から見て左側）</option>
+                        <option value="選択肢35">高欄・地覆（起点から見て右側）</option>
+                        <option value="選択肢36">高欄・防護柵・地覆（起点から見て左側）</option>
+                        <option value="選択肢37">高欄・防護柵・地覆（起点から見て右側）</option>
+                        <option value="選択肢38">防護柵・地覆・縁石（起点から見て左側）</option>
+                        <option value="選択肢39">防護柵・地覆・縁石（起点から見て右側）</option>
+                        <option value="選択肢40">防護柵・縁石（起点から見て左側）</option>
+                        <option value="選択肢41">防護柵・縁石（起点から見て右側）</option>
+                        <option value="選択肢42">防護柵・中央分離帯（起点から見て左側）</option>
+                        <option value="選択肢43">防護柵・中央分離帯（起点から見て右側）</option>
+                        <option value="選択肢44">高欄（起点から見て左側）</option>
+                        <option value="選択肢45">高欄（起点から見て右側）</option>
+                        <option value="選択肢46">防護柵（起点から見て左側）</option>
+                        <option value="選択肢47">防護柵（起点から見て右側）</option>
+                        <option value="選択肢48">中央分離帯（起点から見て左側）</option>
+                        <option value="選択肢49">中央分離帯（起点から見て右側）</option>
+                        <option value="選択肢50">伸縮装置（起点側）</option>
+                        <option value="選択肢51">伸縮装置（終点側）</option>
+                        <option value="選択肢52">照明施設</option>
+                        <option value="選択肢53">標識施設</option>
+                        <option value="選択肢54">排水ます</option>
+                        <option value="選択肢55">排水管</option>
+                        <option value="選択肢56">添架物</option>
+                        <option value="選択肢57">添接部　F11Tボルト使用</option>
+                        <option value="選択肢58">ゲルバー部</option>
+                        <option value="選択肢59">箱桁内部</option>
+                        <option value="選択肢60">点検施設</option>
+                        <option value="選択肢61">橋名板</option>
+                        <option value="選択肢62">橋歴板</option>
+                        <option value="選択肢63">竣工板</option>
+                        <option value="選択肢64">塗装歴板</option>
+                        <option value="選択肢65">河川名板</option>
+                        <option value="選択肢66">水路状況</option>
+                        <option value="選択肢67">ＫＹミーティング</option>
+                        <option value="選択肢68">規制状況（歩道規制）</option>
+                        <option value="選択肢69">規制状況（路肩規制）</option>
+                        <option value="選択肢70">規制状況（片側交互通行）</option>
+                        <option value="選択肢71">規制状況（車線減少）</option>
+                        <option value="選択肢72">規制状況（通行止め）</option>
+                        <option value="選択肢73">点検状況（地上）</option>
+                        <option value="選択肢74">点検状況（梯子）</option>
+                        <option value="選択肢75">点検状況（軌陸車）</option>
+                        <option value="選択肢76">点検状況（高所作業車）</option>
+                        <option value="選択肢77">点検状況（橋梁点検車）</option>
+                        <option value="選択肢78">点検状況（ドローンによる空撮）</option>
+                        <option value="その他">その他（自由記述）</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button-group ml-2 d-flex flex-column justify-content-start"> <!-- flex-column:縦並び、justify-content-start:左寄せ -->
+                <!-- コメント入力 -->
+                <textarea id="comment-{{ forloop.counter0 }}" class="form-control" rows="3" placeholder="コメントを入力してください" style="width: 200px; display: none;"></textarea>
+                <!-- 写真番号表示（編集可能とするためinputタグを使用）
+                <input type="number" id="photo-number-{{ forloop.counter0 }}" value="{{ forloop.counter }}" class="form-control" style="width: 60px;"> -->
+                <!-- 写真変更ボタン -->
+                <form action="{% url 'change_photo' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="new_image" id="change-photo-{{ forloop.counter0 }}" style="display: none;" onchange="this.form.submit()">
+                    <label for="change-photo-{{ forloop.counter0 }}" class="btn btn-info mt-2 mb-3">変更</label>
+                </form>
+                <!-- 写真削除ボタン -->
+                <button type="button" class="btn btn-danger" onclick="deletePhoto('{{ img }}')">削除</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+<!-- </form> -->
+<script>
+    // テキストボックスの内容が変更されたときに自動保存を行う関数
+    function autoSave(commentId) {
+        var comment = document.getElementById(commentId).value;
+        localStorage.setItem(commentId, comment);
+    }
+    
+    // ページ読み込み時に保存されたコメントを復元する処理
+    window.onload = function () {
+        {% for image_file in image_files %}
+            var savedComment = localStorage.getItem("comment-{{ forloop.counter0 }}");
+            if (savedComment) {
+                var commentTextarea = document.getElementById("comment-{{ forloop.counter0 }}");
+                commentTextarea.value = savedComment;
+            }
+        {% endfor %}
+    };
+    
+    // テキストボックスの内容が変更されたときに自動保存関数を呼び出す
+    {% for image_file in image_files %}
+        var commentTextarea{{ forloop.counter0 }} = document.getElementById("comment-{{ forloop.counter0 }}");
+        commentTextarea{{ forloop.counter0 }}.addEventListener("input", function () {
+            autoSave("comment-{{ forloop.counter0 }}");
+        });
+    {% endfor %}
+    
+    function toggleCustomInput(select) {
+        // 対応するテキストエリアを特定
+        var textareaId = "comment-" + select.id.split('-').pop();
+        var textarea = document.getElementById(textareaId);
+        // "その他（自由記述）"が選択された場合のみ、テキストエリアを表示
+        if(select.value === "その他") {
+            textarea.style.display = ""; // テキストエリアを表示
+        } else {
+            textarea.style.display = "none"; // テキストエリアを非表示
+            textarea.value = ""; // テキストエリアをクリア
+        }
+    }
+
+    let dragged;
+
+    document.addEventListener('dragstart', (event) => {
+        dragged = event.target;
+        event.target.style.opacity = 0.5;
+    });
+
+    document.addEventListener('dragend', (event) => {
+        event.target.style.opacity = "";
+    });
+
+    document.addEventListener('dragover', (event) => {
+        event.preventDefault();
+    });
+
+    document.addEventListener('dragenter', (event) => {
+        if (event.target.classList.contains('draggable')) {
+            event.target.classList.add('placeholder');
+        }
+    });
+
+    document.addEventListener('dragleave', (event) => {
+        if (event.target.classList.contains('draggable')) {
+            event.target.classList.remove('placeholder');
+        }
+    });
+
+    document.addEventListener('drop', (event) => {
+        event.preventDefault();
+        if (event.target.classList.contains('draggable')) {
+            event.target.classList.remove('placeholder');
+            if (event.target.id != dragged.id) {
+                let parent = dragged.parentNode;
+                dragged.parentNode.removeChild(dragged);
+                let droppedOn = event.target;
+                parent.insertBefore(dragged, droppedOn);
+            }
+        }
+    });
+
+</script>
+{% endblock content %}

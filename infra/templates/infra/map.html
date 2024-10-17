@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps API Demo</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Maps API Demo</h1>
+    
+    <div id="map"></div>
+    
+    <script>
+        // Google Maps API キー
+        const apiKey = 'AIzaSyASpyfsrPZqSHakMucUwlG3qsVC_YpFRHY';
+
+        // Google Maps API スクリプトの読み込み
+        function loadScript() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyASpyfsrPZqSHakMucUwlG3qsVC_YpFRHY&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        // Google Maps 初期化
+        function initMap() {
+            // 初期の地図の中心座標
+            const initialLocation = { lat: 35.6895, lng: 139.6917 };
+
+            // マップの作成
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: initialLocation,
+                zoom: 12
+            });
+
+            // マーカーの作成
+            const marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                draggable: true  // マーカーをドラッグ可能にする
+            });
+
+            // マーカーのドラッグ終了時のイベントリスナー
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                // ドラッグ終了時の緯度経度を取得
+                const newLocation = {
+                    lat: event.latLng.lat(),
+                    lng: event.latLng.lng()
+                };
+
+                // 緯度と経度を画面に表示
+                document.getElementById('latitude').textContent = `Latitude: ${newLocation.lat}`;
+                document.getElementById('longitude').textContent = `Longitude: ${newLocation.lng}`;
+            });
+        }
+
+        // Google Maps API スクリプトの非同期読み込み
+        window.onload = loadScript;
+
+        function initMap() {
+          var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -34.397, lng: 150.644},
+            zoom: 8
+          });
+        
+          map.addListener('click', function(event) {
+            var lat = event.latLng.lat();
+            var lng = event.latLng.lng();
+            document.getElementById('result').innerHTML = '緯度: ' + lat + '<br>経度: ' + lng;
+          });
+        }
+        
+    </script>
+
+    <p id="latitude">Latitude: </p>
+    <p id="longitude">Longitude: </p>
+</body>
+</html>

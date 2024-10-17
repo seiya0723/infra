@@ -1,0 +1,23 @@
+<form method="POST">
+    {% csrf_token %}
+    {% for panorama in panoramas %}
+        <style>
+            .panorama-item {
+                display: inline-block;
+                margin: 10px;
+                text-align: center;
+            }
+            
+            .panorama-item img {
+                max-width: 50px;
+                height: auto;
+            }
+        </style>
+
+        <div>
+            <img src="{{ panorama.image.url }}" alt="Panorama Image">
+            <input type="checkbox" name="selected_panoramas" value="{{ panorama.id }}" {% if panorama.checked %}checked{% endif %}>
+        </div>
+    {% endfor %}
+    <button type="submit">再選択</button>
+</form>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>画像選択とプレビュー</title>
+    <style>
+        .image-preview { width: 100px; }
+    </style>
+</head>
+<body>
+
+<input type="file" id="image-input" multiple accept="image/*">
+<div id="preview"></div>
+
+<script>
+document.getElementById('image-input').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('preview');
+    previewContainer.innerHTML = ''; // 既存のプレビューをクリア
+
+    const files = e.target.files;
+    Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('image-preview');
+                previewContainer.appendChild(img);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+
+</body>
+</html>

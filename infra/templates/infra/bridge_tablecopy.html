@@ -1,0 +1,208 @@
+<!-- table.html -->
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}損傷一覧{% endblock title %}
+{% block h1 %}損傷一覧{% endblock %}
+
+{% block content %}
+{# ここで径間ボタンを生成 #}
+<form action="{% url 'bridge-table' object.infra.article.pk object.infra.pk %}">
+    {% for button in buttons %}
+    <button name="search_title_text" value="{{ forloop.counter }}径間">{{ forloop.counter }}径間</button>
+    {% endfor %}
+</form>
+{# HTMLのtableタグのルールとして、table系のタグ以外(formタグなど)が使われた時、中の要素だけ外に追い出される。 #}
+<table class="my-table" border="1">
+    <thead>
+        <tr>
+            <th>損傷状況</th>
+            <th>損傷写真</th>
+        </tr>
+    </thead>
+    <tbody id="sortable">
+        {% for group in grouped_data %}
+        {% for bridge in group %}
+        <tr>
+            <p>{{ group }}</p>
+            {% if forloop.first %}
+            {% comment %} <form id="ajax-file-send" action="#" method="post" enctype="multipart/form-data"> {% endcomment %}
+                <!--ajaxの設定：methodはpostにする、mulitpart/form-dataとする、CSRF対策を行う-->
+                {% csrf_token %}
+                <td>
+                    <div style="border: 1px solid black; padding: 5px; margin-bottom: 10px; width: 450px;">
+                        {% for bridge in group %}
+                            {% ifchanged %} <!-- 前のループと違う値の場合に出力 -->
+                            <span style="background-color: Pink;">{{ bridge.parts_name }}</span> <!-- first項目に色付け -->
+                            <br>
+                            {% endifchanged %}
+                            {{ bridge.damage_name }}
+                                <br>
+                                <select name="input1_{{ forloop.counter }}" onChange="updatePlaceholder(this)" style="height:30px; resize: none;">
+                                    <option value=""></option>
+                                    <option value="width">幅</option>
+                                    <option value="area">面積</option>
+                                    <option value="bolt">本数</option>
+                                    <option value="level">段差量</option>
+                                </select>
+                                <textarea type="text" id="damage_size-{{ bridge.id }}"    name="damage_size-{{ bridge.id }}"    placeholder="数量" style="height:30px; width: 130px; resize: none;">{{ bridge.damage_size|default:"" }}</textarea> {% comment %} overflow-x: scroll; white-space: nowrap; {% endcomment %}
+                                <textarea type="text" id="unit-{{ bridge.id }}"           name="unit-{{ bridge.id }}"           placeholder="単位" style="height:30px; width: 60px; resize: none;">{{ bridge.unit|default:"" }}</textarea>
+                                <textarea type="text" id="classification-{{ bridge.id }}" name="classification-{{ bridge.id }}" placeholder="分類" style="height:30px; width: 60px; resize: none;">{{ bridge.classification|default:"" }}</textarea>
+                                <textarea type="text" id="pattern-{{ bridge.id }}"        name="pattern-{{ bridge.id }}"        placeholder="パターン" style="height:30px; width: 100px; resize: none;">{{ bridge.pattern|default:"" }}</textarea>
+                                <br>
+                        {% endfor %}
+                        <br>
+                    </div>
+                </td>
+                {% if forloop.first %}
+                <td class="center-align" rowspan="{{ group|length }}">
+                    <ul class="vert"> 
+                        {% if bridge.this_time_picture is not None %}
+                        {% for picture in bridge.this_time_picture|split_comma %}
+                        <p>{{ picture }}</p>
+                            <ul class="side">
+                                <li style="top-bottom: 5px; margin-bottom: 5px;"> <!-- ここで下部の空間を指定 -->
+                                    <div style="display: flex; align-items: center;"> <!--align-items: center; 縦の中央に配置-->
+                                    
+                                        <div>
+                                            <img id="uploaded-image-{{ forloop.parentloop.counter }}" src="{% static picture.strip %}" width="200" height="150" style="margin:0 10px;">
+                                        </div>{% comment %} src="{{ picture|remove_prefix:'/infra/static' }}" {% url 'serve_image' picture %} strip:先頭と末尾から空白を取り除く {% endcomment %}
+                                    
+                                        <div style="display: flex; flex-direction: column; justify-content: center;"> <!--justify-content: center; ボタンを縦の中央に配置-->
+                                            <input id="upload-file-{{ forloop.parentloop.counter }}" name="upload-file" type="file" style="display: none">
+                                            <button id="fileSelect-{{ forloop.parentloop.counter }}" type="button" style="margin-bottom: 10px;" value="{% static this_time_picture_item %}">変更</button><!--bottom(下方向)に10pxの間隔を空ける-->
+                                            <button style="margin-bottom: 10px;">追加</button>
+                                            <button>削除</button> <!--縦文字に変更-->
+                                        </div>
+                                    </div>
+                                </li>
+                                <li style="top-bottom: 5px; margin-bottom: 5px;"> <!-- ここで下部の空間を指定 -->
+                                    <div style="display: flex; align-items: center;"> <!--align-items: center; 縦の中央に配置-->
+                                        <div>
+                                        {% if bridge.last_time_picture is None %}
+                                            <img id="before-image" src="{% static 'infra/noImage.png' %}" width="200" height="150" style="margin:0 10px; border: 1px solid grey;">
+                                        {% else %}
+                                            <img id="before-image" src="{% static bridge.last_time_picture %}" width="200" height="150" style="margin:0 10px; border: 1px solid grey;">
+                                        {% endif %}
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; justify-content: center;"> <!--justify-content: center; ボタンを縦の中央に配置-->
+                                            <input id="upload-file" name="upload-file" type="file" style="display: none">
+                                            <button id="fileSelect" type="button" style="margin-bottom: 10px;" value="{% static item %}">変更</button>
+                                            <!--<button id="fileSelect" type="button" style="margin-bottom: 10px;" value="{% static item %}">変更</button>-->
+                                            <!--<button style="margin-bottom: 10px;">変更</button> bottom(下方向)に10pxの間隔を空ける-->
+                                            <button>削除</button>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li style="top-bottom: 5px; margin-bottom: 5px;"> <!-- ここで下部の空間を指定 -->
+                                    {% spaceless %}
+                                        {% if bridge.textarea_content %} <!-- damage_tableのforループ(bridge)とviews.pyのtextarea_content-->
+                                            <textarea name="notes" rows="6" style="margin:0 10px;">{{ bridge.textarea_content|safe }}</textarea>
+                                        {% else %}
+                                            <textarea name="notes" rows="6" style="margin:0 10px;" placeholder="写真メモを入力してください。"></textarea>
+                                        {% endif %}
+                                    {% endspaceless %}
+                                </li>
+                            </ul>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </td>
+                {% endif %}
+            {% comment %} </form> {% endcomment %}
+            {% endif %}  
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+//保存ボタンを押さなくてもデータを保存する(リアルタイム保存)
+$(document).ready(function(){ // ドキュメントが完全に読み込まれた後に関数を実行する
+    $('textarea[name="damage_size"]').on('input', function() { // 範囲指定：指定されたテキストエリアの名前属性を持つすべてのテキストエリア
+        let comment = $(this).val(); // テキストエリアに入力された値を取得してcomment変数に格納
+        let itemId = $(this).attr('id').split('-')[1]; // idからitemIdを取得
+        // AJAXリクエストを設定して送信
+        $.ajax({
+            type: 'POST', // リクエストのタイプをPOSTに設定
+            url: "/update_full_report_data/" + itemId + "/",  // リクエストを送信するURLを動的に設定
+            // リクエストにデータを含める。コメントとCSRFトークンを送信
+            data: {
+                'damage_size': comment, // 取得したコメントの値
+                'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRFトークンの値
+            },
+            // リクエスト成功時のコールバック関数
+            success: function(response) {
+                if (response.status === 'success') { // サーバーからのレスポンスのステータスが'success'の場合
+                    console.log("所見コメントを保存しました。");
+                } else {
+                    console.log("保存時にエラーが発生しました。");
+                }
+            },
+            error: function(xhr, status, error){
+                console.error("保存時にエラーが発生しました。サーバ側のエラーなどを確認してください。");
+            }
+        });
+    });
+});
+// フォームを動的に送信
+function editData(button) {
+    // 対応するフォームを取得
+    var form = button.closest('form');
+
+    // bridge.damage_coordinate_xとbridge.damage_coordinate_yの値を取得しコンマで結合
+    var coords = form.querySelector('input[name="coords"]').value;
+
+    // 小窓を表示し、変更内容を入力させる
+    var newTextField = form.querySelector('input[name="new_text"]');
+    var newText = prompt("変更内容を入力してください");
+    if (newText !== null && newText !== "") {
+        newTextField.value = newText;
+        form.submit();
+    }
+}
+
+function deleteData(button) {
+    // 確認ダイアログを表示
+    if (confirm("本当に削除しますか？")) {
+        var form = button.closest('form');
+        form.submit();
+    }
+}
+// 写真を変更する際にサーバーに送信
+{% comment %} document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('button[id^="fileSelect-"]').forEach((button, index) => {
+        button.addEventListener('click', function() {
+            document.getElementById(`upload-file-${index + 1}`).click();
+        });
+
+        let uploadInput = document.getElementById(`upload-file-${index + 1}`);
+        uploadInput.addEventListener('change', function() {
+            let formData = new FormData();
+            formData.append('upload-file', uploadInput.files[0]);
+            formData.append('bridge_id', button.value);  // バリューとしてBridgeのIDを送信します。
+
+            fetch("{% url 'ajax_file_send' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.upload_file_url) {
+                    document.getElementById(`uploaded-image-${index + 1}`).src = data.upload_file_url;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+}); {% endcomment %}
+</script>
+
+{% endblock content %}

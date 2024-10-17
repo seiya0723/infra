@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ボタンから写真選択画面に遷移</title>
+    <style>
+        .hidden-input {
+            display: none; /*ファイル選択を隠す*/
+        }
+    </style>
+</head>
+<body>
+
+<!-- ユーザーが見るボタン -->
+<button id="upload-button" style="margin-bottom: 10px;">変更</button>
+<!-- 本当のファイルアップロードインプット (隠し要素) -->
+<input type="file" id="hidden-input" class="hidden-input">
+
+<script>
+    // ボタンと隠しinput要素を取得
+    var button = document.getElementById('upload-button');
+    var hiddenInput = document.getElementById('hidden-input');
+    
+    // ボタンがクリックされたときの処理
+    button.onclick = function() {
+        hiddenInput.click(); // 隠しinput要素をクリック
+    };
+    
+    // 隠しinput要素でファイルが選ばれた時のイベント
+    hiddenInput.onchange = function() {
+        var file = this.files[0];
+        // ここで選択されたファイルを扱うことができる
+        // 例えば、ファイル名をアラート表示
+        alert("選択されたファイル: " + file.name);
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Tree</title>
+    <style>
+        ul { list-style-type:none; }
+        li { margin-left:20px; cursor: pointer; }
+        .toggle-btn { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <ul id="file-tree">
+        <li>
+            <button class="toggle-btn" onclick="toggleDirectory(this, '{{ root_dir }}')">+</button> Home Directory
+        </li>
+    </ul>
+    <button onclick="submitSelection()">Select File</button>
+    <script>
+        function toggleDirectory(element, path) {
+            const nextElement = element.parentNode.querySelector('ul');
+            if (nextElement) {
+                // Already expanded, so collapse it
+                if (nextElement.style.display === 'none') {
+                    nextElement.style.display = 'block';
+                    element.innerHTML = '-';
+                } else {
+                    nextElement.style.display = 'none';
+                    element.innerHTML = '+';
+                }
+            } else {
+                // Not expanded, so expand it
+                fetch(`/get-subdirectories/?path=${encodeURIComponent(path)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const ul = document.createElement('ul');
+                        data.directories.forEach(subDir => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<button class="toggle-btn" onclick="toggleDirectory(this, '${subDir}')">+</button> ${subDir}`;
+                            ul.appendChild(li);
+                        });
+                        data.files.forEach(file => {
+                            const li = document.createElement('li');
+                            li.innerHTML = file;
+                            li.onclick = function () { selectFile(file); };
+                            ul.appendChild(li);
+                        });
+                        element.innerHTML = '-';
+                        element.parentNode.appendChild(ul);
+                    });
+            }
+        }
+
+        function selectFile(filePath) {
+            document.cookie = "selected_file=" + filePath + "; path=/";
+            alert('Selected file: ' + filePath); // 選択したファイルパスを表示
+        }
+
+        function submitSelection() {
+            window.location.href = "{% url 'create-article' %}";
+        }
+    </script>
+</body>
+</html>

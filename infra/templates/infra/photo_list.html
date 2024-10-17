@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>写真一覧</h2>
+  <form method="post" action="{% url 'selected_photos' %}">
+    {% csrf_token %}
+    {% for photo in photos %}
+      <div>
+        <img src="{{ photo.image.url }}" alt="Photo">
+        <label>
+          <input type="checkbox" name="selected_photos" value="{{ photo.id }}">
+          選択
+        </label>
+      </div>
+    {% endfor %}
+    <button type="submit">選択した写真を表示</button>
+  </form>
+{% endblock %}
