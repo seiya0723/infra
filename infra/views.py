@@ -320,6 +320,11 @@ def file_upload(request, article_pk, pk):
 
         form    = TableForm(copied, request.FILES)
 
+
+        print("=======")
+        print(request.FILES)
+        print("=======")
+
         print("保存")
         
         if form.is_valid():

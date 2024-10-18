@@ -65,5 +65,9 @@ urlpatterns = [
     # path('serve-image/<str:file_path>/', serve_image, name='serve_image'), # 写真をアップロードせずに表示
     path('article/<int:article_pk>/infra/<int:pk>/bridge-table/upload/', views.upload_picture, name='upload-picture'),
 ]
+
+# この設定は無効
+"""
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+"""
