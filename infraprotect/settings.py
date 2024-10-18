@@ -119,42 +119,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-# STATIC_URL = "infra/static/"# infra/static/以降のファイルパスをviews.pyで指定
 STATIC_URL = "/static/"
-
-if DEBUG: # DEBUG = True のときだけ有効とする
-    STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, "infra/static/"), #「C:\work\django\myproject\myvenv\infraprotect\infra\static\」と同じ
-        # os.path.join(BASE_DIR, "/static/"),
-    )
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) #「C:\work\django\myproject\myvenv\infraprotect\」と同じ
-"""
-MEDIA_URL   = "/media/"
 if DEBUG:
-    MEDIA_ROOT  = os.path.join(BASE_DIR, "media")
-else:
-    PROJECT_NAME    = os.path.basename(BASE_DIR)
-    #↓は一般的なLinuxサーバーにデプロイする場合のパス。クラウドにデプロイする場合、下記は要修正。
-    MEDIA_ROOT      = "/var/www/{}/media".format(PROJECT_NAME)
-"""
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # 「C:\work\django\myproject\myvenv\infraprotect\media」
+    STATICFILES_DIRS = [ BASE_DIR / "infra" / "static" ]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = 'list-article'#'index'
+LOGIN_REDIRECT_URL = 'list-article'
 LOGOUT_REDIRECT_URL = '/'
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 10 # 10 MBの例
-
 AUTH_USER_MODEL = 'accounts.CustomUser'
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 if not DEBUG:
@@ -196,7 +171,6 @@ if not DEBUG:
     DATABASES['default'].update(db_from_env)
     
     # 静的ファイル(static)の存在場所を指定する
-    # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_ROOT = BASE_DIR / 'static'
     
     #ストレージ設定
@@ -205,15 +179,13 @@ if not DEBUG:
     AWS_STORAGE_BUCKET_NAME = os.environ["AWS_STORAGE_BUCKET_NAME"]
     AWS_S3_REGION_NAME = 'ap-northeast-1'
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    # mediaファイル保存先
+
+
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    # 保存先URL
     S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
     MEDIA_URL = S3_URL
-    # AWSの設定
-    AWS_S3_FILE_OVERWRITE = False # 同じファイル名が存在した場合、上書きを行う(デフォルト:True)
-    AWS_DEFAULT_ACL = None # アップロードされたオブジェクトのアクセスコントロールリストを指定(推奨 None:S3バケットのデフォルトACLが適用)
-
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
 
 
 

@@ -310,13 +310,15 @@ def file_upload(request, article_pk, pk):
         
         # 編集する場合
         obj     = Table.objects.filter(infra=infra, article=article).first()
-
-
         
+        """
         if obj:
             form    = TableForm(copied, request.FILES, instance=obj)
         else:
             form    = TableForm(copied, request.FILES)
+        """
+
+        form    = TableForm(copied, request.FILES)
 
         print("保存")
         
