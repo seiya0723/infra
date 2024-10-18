@@ -307,15 +307,18 @@ def file_upload(request, article_pk, pk):
         copied["infra"]     = pk
         copied["article"]   = article_pk
         
-        # バリデーション
         
-        # 既存のオブジェクトに対して新しいファイルを上書きする処理
+        # 編集する場合
         obj     = Table.objects.filter(infra=infra, article=article).first()
 
+
+        
         if obj:
             form    = TableForm(copied, request.FILES, instance=obj)
         else:
             form    = TableForm(copied, request.FILES)
+
+        print("保存")
         
         if form.is_valid():
             form.save()

@@ -213,3 +213,7 @@ if not DEBUG:
     # AWSの設定
     AWS_S3_FILE_OVERWRITE = False # 同じファイル名が存在した場合、上書きを行う(デフォルト:True)
     AWS_DEFAULT_ACL = None # アップロードされたオブジェクトのアクセスコントロールリストを指定(推奨 None:S3バケットのデフォルトACLが適用)
+
+
+
+
