@@ -301,11 +301,14 @@ def file_upload(request, article_pk, pk):
 
 
     if request.method == 'POST':
+
+        """
         copied              = request.POST.copy()
 
         # ここで Infraのid(pk)を指定する。
         copied["infra"]     = pk
         copied["article"]   = article_pk
+        """
         
         # 編集する場合
         obj     = Table.objects.filter(infra=infra, article=article).first()
@@ -318,7 +321,6 @@ def file_upload(request, article_pk, pk):
         """
 
         form    = TableForm(request.POST, request.FILES)
-
 
         from django.conf import settings
         print(settings.DEFAULT_FILE_STORAGE)
