@@ -9,6 +9,12 @@
     </div>
     {# TODO: リクエストで送信をするのは、dxfだけ、 Infraのidはサーバー側でセットする。 #}
     {{ form.dxf }}
+
+
+    <input type="hidden" name="infra" value="{{ pk }}">
+    <input type="hidden" name="article" value="{{ article_pk }}">
+
+
     <button type="submit">アップロード</button>
   </form>
 
